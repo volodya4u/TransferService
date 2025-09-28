@@ -26,7 +26,7 @@
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.appsdeveloperblog.payments.ws</groupId>
+			<groupId>com.appsdeveloperblog.ws</groupId>
 			<artifactId>core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

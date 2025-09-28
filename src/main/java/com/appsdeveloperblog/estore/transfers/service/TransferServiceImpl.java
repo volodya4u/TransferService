@@ -12,8 +12,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.appsdeveloperblog.estore.transfers.error.TransferServiceException;
 import com.appsdeveloperblog.estore.transfers.model.TransferRestModel;
-import com.appsdeveloperblog.payments.ws.core.events.DepositRequestedEvent;
-import com.appsdeveloperblog.payments.ws.core.events.WithdrawalRequestedEvent;
+import com.appsdeveloperblog.ws.core.events.DepositRequestedEvent;
+import com.appsdeveloperblog.ws.core.events.WithdrawalRequestedEvent;
 
 @Service
 public class TransferServiceImpl implements TransferService {
