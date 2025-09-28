@@ -12,6 +12,7 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 @Configuration
 public class KafkaConfig {
@@ -76,8 +77,13 @@ public class KafkaConfig {
 	}
 
 	@Bean
-	KafkaTemplate<String, Object> kafkaTemplate() {
-		return new KafkaTemplate<String, Object>(producerFactory());
+	KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
+		return new KafkaTemplate<String, Object>(producerFactory);
+	}
+
+	@Bean
+	KafkaTransactionManager<String, Object> transactionManager(ProducerFactory<String, Object> producerFactory) {
+		return new KafkaTransactionManager<>(producerFactory);
 	}
 
 	@Bean
