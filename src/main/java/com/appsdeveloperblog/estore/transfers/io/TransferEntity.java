@@ -8,7 +8,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="transfers")
 public class TransferEntity implements Serializable {
@@ -27,48 +35,5 @@ public class TransferEntity implements Serializable {
 
     @Column(nullable = false)
     private BigDecimal amount;
-
-    public TransferEntity() {
-    }
- 
-    public TransferEntity(String transferId, String senderId, String recepientId, BigDecimal amount) {
-        this.transferId = transferId;
-        this.senderId = senderId;
-        this.recepientId = recepientId;
-        this.amount = amount;
-    }
-
-    public String getTransferId() {
-        return transferId;
-    }
-
-    public void setTransferId(String transferId) {
-        this.transferId = transferId;
-    }
-
-    public String getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
-    }
-
-    public String getRecepientId() {
-        return recepientId;
-    }
-
-    public void setRecepientId(String recepientId) {
-        this.recepientId = recepientId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
  
 }
-
