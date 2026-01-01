@@ -15,8 +15,6 @@ import com.appsdeveloperblog.estore.transfers.model.TransferRestModel;
 import com.appsdeveloperblog.ws.core.events.DepositRequestedEvent;
 import com.appsdeveloperblog.ws.core.events.WithdrawalRequestedEvent;
 
-import java.net.ConnectException;
-
 @Slf4j
 @Service
 public class TransferServiceImpl implements TransferService {
@@ -32,9 +30,7 @@ public class TransferServiceImpl implements TransferService {
 		this.restTemplate = restTemplate;
 	}
 
-	@Transactional(value = "kafkaTransactionManager",
-			rollbackFor = {TransferServiceException.class, ConnectException.class}
-	)
+	@Transactional("kafkaTransactionManager")
 	@Override
 	public boolean transfer(TransferRestModel transferRestModel) {
 		WithdrawalRequestedEvent withdrawalEvent = new WithdrawalRequestedEvent(transferRestModel.getSenderId(),
