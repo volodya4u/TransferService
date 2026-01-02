@@ -1,6 +1,10 @@
 package com.appsdeveloperblog.estore.transfers.service;
 
+import com.appsdeveloperblog.estore.transfers.io.TransferEntity;
+import com.appsdeveloperblog.estore.transfers.io.TransferRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.Uuid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -22,15 +26,17 @@ public class TransferServiceImpl implements TransferService {
 	private KafkaTemplate<String, Object> kafkaTemplate;
 	private Environment environment;
 	private RestTemplate restTemplate;
+	private TransferRepository transferRepository;
 
 	public TransferServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, Environment environment,
-			RestTemplate restTemplate) {
+			RestTemplate restTemplate, TransferRepository transferRepository) {
 		this.kafkaTemplate = kafkaTemplate;
 		this.environment = environment;
 		this.restTemplate = restTemplate;
+		this.transferRepository = transferRepository;
 	}
 
-	@Transactional("kafkaTransactionManager")
+	@Transactional("transactionManager")
 	@Override
 	public boolean transfer(TransferRestModel transferRestModel) {
 		WithdrawalRequestedEvent withdrawalEvent = new WithdrawalRequestedEvent(transferRestModel.getSenderId(),
@@ -38,7 +44,15 @@ public class TransferServiceImpl implements TransferService {
 		DepositRequestedEvent depositEvent = new DepositRequestedEvent(transferRestModel.getSenderId(),
 				transferRestModel.getRecepientId(), transferRestModel.getAmount());
 
+		TransferEntity transferEntity = new TransferEntity();
+		BeanUtils.copyProperties(transferRestModel, transferEntity);
+		transferEntity.setTransferId(Uuid.randomUuid().toString());
+
 		try {
+
+			// Save record to a database table
+			transferRepository.save(transferEntity);
+
 			kafkaTemplate.send(environment.getProperty("withdraw-money-topic", "withdraw-money-topic"),
 					withdrawalEvent);
 			log.info("Sent event to withdrawal topic.");
