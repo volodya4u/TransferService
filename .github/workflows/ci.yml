@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # The shared core library (volodya4u/core) is not published to a Maven
+      # repository, so build it and install it into the local one first.
+      - name: Check out core library
+        uses: actions/checkout@v7
+        with:
+          repository: volodya4u/core
+          path: .core
+
+      - name: Install core library
+        run: mvn -B -ntp install -DskipTests -f .core/pom.xml
+
+      - name: Build and test
+        run: mvn -B -ntp verify
