@@ -38,3 +38,28 @@ jobs:
 
       - name: Build and test
         run: mvn -B -ntp verify
+
+  # Merge Dependabot's patch and minor updates once build-and-test has passed.
+  # Docker image updates and minor Spring Boot parent updates are left for review.
+  dependabot-auto-merge:
+    needs: build-and-test
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v3
+
+      - name: Merge patch and minor updates
+        if: >-
+          steps.meta.outputs.package-ecosystem != 'docker' &&
+          (steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+           (steps.meta.outputs.update-type == 'version-update:semver-minor' &&
+            !contains(steps.meta.outputs.dependency-names, 'spring-boot-starter-parent')))
+        run: gh pr merge --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
