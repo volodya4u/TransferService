@@ -55,6 +55,12 @@ public class KafkaConfig {
 	@Value("${spring.kafka.producer.transaction-id-prefix}")
 	private String transactionalIdPrefix;
 
+	@Value("${app.kafka.topic.partitions}")
+	private int topicPartitions;
+
+	@Value("${app.kafka.topic.replicas}")
+	private int topicReplicas;
+
 	public Map<String, Object> producerConfigs() {
 		Map<String, Object> props = new HashMap<>();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -95,11 +101,11 @@ public class KafkaConfig {
 
 	@Bean
 	NewTopic createWithdrawTopic() {
-		return TopicBuilder.name(withdrawTopicName).partitions(3).replicas(3).build();
+		return TopicBuilder.name(withdrawTopicName).partitions(topicPartitions).replicas(topicReplicas).build();
 	}
 
 	@Bean
 	NewTopic createDepositTopic() {
-		return TopicBuilder.name(depositTopicName).partitions(3).replicas(3).build();
+		return TopicBuilder.name(depositTopicName).partitions(topicPartitions).replicas(topicReplicas).build();
 	}
 }
